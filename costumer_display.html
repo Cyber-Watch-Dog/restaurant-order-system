@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fresheat Menu</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#f7f5f0] font-sans">
+
+<!-- Header -->
+<header class="bg-white shadow-md p-4 flex justify-between items-center">
+  <div class="text-xl font-bold text-gray-800">FRESHEAT</div>
+  <nav class="space-x-4">
+    <a href="#" class="hover:underline">Home</a>
+    <a href="#" class="hover:underline">About Us</a>
+    <a href="#" class="hover:underline">Shop</a>
+    <a href="#" class="hover:underline">Blog</a>
+    <a href="#" class="hover:underline">Contact Us</a>
+  </nav>
+  <div class="space-x-4 flex items-center">
+    <!-- Cart Icon with Badge -->
+    <div class="relative inline-block">
+      <button onclick="toggleCart()">🛒</button>
+      <span id="cart-count" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full px-1.5 py-0.5 hidden">0</span>
+    </div>
+    <button>☰</button>
+  </div>
+</header>
+
+<!-- Main content -->
+<main class="p-10">
+  <h2 class="text-2xl font-bold mb-6">Popular Dishes</h2>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+
+    <!-- Menu Card 1 -->
+    <div class="bg-white p-4 rounded-xl shadow-md text-center">
+      <img src="https://static.vecteezy.com/system/resources/previews/052/644/642/non_2x/delicious-buffalo-chicken-pizza-for-casual-dining-or-events-on-transparent-background-png.png" alt="Chicken Pizza" class="rounded-full mx-auto mb-4" />
+      <h3 class="text-lg font-semibold">Chicken Pizza</h3>
+      <div class="text-yellow-400 text-sm mb-1">★★★★☆</div>
+      <p class="text-sm text-gray-500">The Registration Fee</p>
+      <p class="text-lg font-bold text-red-600">$24.00</p>
+      <button onclick="addToCart('Chicken Pizza', 24.00)" class="mt-4 bg-pink-100 text-pink-700 px-4 py-2 rounded-full hover:bg-pink-200">ORDER NOW 🍽️</button>
+    </div>
+
+    <!-- Menu Card 2 -->
+    <div class="bg-white p-4 rounded-xl shadow-md text-center">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQH_Pey8TI3pl3b9rbuSIN0t4066YWTkBPs-w&s" alt="Egg and Cucumber" class="rounded-full mx-auto mb-4" />
+      <h3 class="text-lg font-semibold">Egg and Cucumber</h3>
+      <div class="text-yellow-400 text-sm mb-1">★★★★★</div>
+      <p class="text-sm text-gray-500">The Registration Fee</p>
+      <p class="text-lg font-bold text-red-600">$28.00</p>
+      <button onclick="addToCart('Egg and Cucumber', 28.00)" class="mt-4 bg-pink-100 text-pink-700 px-4 py-2 rounded-full hover:bg-pink-200">ORDER NOW 🍽️</button>
+    </div>
+
+  </div>
+</main>
+
+<!-- Cart Sidebar -->
+<div id="cart" class="fixed top-0 right-0 w-80 bg-white h-full shadow-lg transform translate-x-full transition-transform duration-300 z-50 p-6 overflow-y-auto">
+  <div class="flex items-center mb-4">
+    <button onclick="toggleCart()" class="text-xl mr-2">←</button>
+    <h3 class="text-xl font-bold">Your Cart</h3>
+  </div>
+  <div id="cart-items"></div>
+  <div class="mt-6 border-t pt-4">
+    <p class="text-lg font-semibold">Total: $<span id="total">0.00</span></p>
+  </div>
+  <form class="mt-6 space-y-4">
+    <input type="text" placeholder="Table/Room Number" class="w-full border p-2 rounded" required>
+    <textarea placeholder="Special Instructions" class="w-full border p-2 rounded"></textarea>
+    <button type="submit" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Checkout</button>
+  </form>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="fixed bottom-6 right-6 bg-green-500 text-white px-4 py-2 rounded-lg shadow-md opacity-0 transition-opacity duration-300 pointer-events-none z-50">
+  Item added to cart!
+</div>
+
+<script>
+  const cart = {};
+
+  function toggleCart() {
+    document.getElementById('cart').classList.toggle('translate-x-full');
+  }
+
+  function addToCart(name, price) {
+    if (!cart[name]) {
+      cart[name] = { price, quantity: 1 };
+    } else {
+      cart[name].quantity++;
+    }
+    renderCart();
+    showToast(`✅ ${name} added to cart!`);
+  }
+
+  function removeItem(name) {
+    delete cart[name];
+    renderCart();
+  }
+
+  function updateQuantity(name, change) {
+    cart[name].quantity += change;
+    if (cart[name].quantity <= 0) {
+      delete cart[name];
+    }
+    renderCart();
+  }
+
+  function renderCart() {
+    const cartItems = document.getElementById('cart-items');
+    const totalAmount = document.getElementById('total');
+    const cartCount = document.getElementById('cart-count');
+    
+    cartItems.innerHTML = '';
+    let total = 0;
+    let itemCount = 0;
+
+    for (const item in cart) {
+      const { price, quantity } = cart[item];
+      total += price * quantity;
+      itemCount += quantity;
+
+      cartItems.innerHTML += `
+        <div class="flex justify-between items-center mb-4">
+          <div>
+            <p class="font-semibold">${item}</p>
+            <p class="text-sm text-gray-500">$${price} x ${quantity}</p>
+            <div class="flex items-center gap-2 mt-1">
+              <button onclick="updateQuantity('${item}', -1)" class="px-2 py-1 bg-gray-200 rounded">-</button>
+              <span>${quantity}</span>
+              <button onclick="updateQuantity('${item}', 1)" class="px-2 py-1 bg-gray-200 rounded">+</button>
+            </div>
+          </div>
+          <button onclick="removeItem('${item}')" class="text-red-500 text-xl">🗑️</button>
+        </div>
+      `;
+    }
+
+    totalAmount.innerText = total.toFixed(2);
+
+    // Update badge
+    if (itemCount > 0) {
+      cartCount.innerText = itemCount;
+      cartCount.classList.remove('hidden');
+    } else {
+      cartCount.classList.add('hidden');
+    }
+  }
+
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.remove('opacity-0');
+    toast.classList.add('opacity-100');
+    setTimeout(() => {
+      toast.classList.remove('opacity-100');
+      toast.classList.add('opacity-0');
+    }, 2000);
+  }
+</script>
+
+</body>
+</html>
