@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Add New Menu Item</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    input, button { padding: 10px; margin: 10px 0; display: block; width: 100%; }
+    .menu-list { margin-top: 30px; }
+    .item { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+
+  <h2>Add New Menu Item</h2>
+  <form id="itemForm">
+    <input type="text" id="name" placeholder="Item name" required />
+    <input type="number" id="price" placeholder="Price" required />
+    <input type="text" id="category" placeholder="Category (e.g. Drinks)" required />
+    <button type="submit">Add Item</button>
+  </form>
+
+  <div class="menu-list" id="menuList"></div>
+
+  <script>
+    const form = document.getElementById('itemForm');
+    const menuList = document.getElementById('menuList');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const price = document.getElementById('price').value;
+      const category = document.getElementById('category').value;
+
+      const item = document.createElement('div');
+      item.classList.add('item');
+      item.innerHTML = `<strong>${name}</strong> - ₹${price}<br><small>${category}</small>`;
+
+      menuList.appendChild(item);
+
+      form.reset();
+    });
+  </script>
+
+</body>
+</html>
